@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UltraTech vs Shree Cement — Financial Analysis Workspace</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  /* Core surfaces */
+  --bg:#f4f2ee;
+  --surface:#ffffff;
+  --surface-sunken:#faf9f6;
+  --surface-tint:#f0ede6;
+  --line:#e3ded3;
+  --line-strong:#d3cbb9;
+
+  /* Ink */
+  --ink:#1c1a15;
+  --ink-soft:#4a453b;
+  --muted:#8a8271;
+  --muted-soft:#b0a893;
+
+  /* Accent: deep ledger-navy + warm clay for state coding (finance-terminal, not templated cream/clay pairing) */
+  --navy:#1c2d4a;
+  --navy-soft:#3a4f74;
+  --navy-bg:#eaeef5;
+  --navy-line:#c3cfe0;
+
+  --co1:#1c2d4a;      /* company 1 accent: navy */
+  --co2:#8a5a2e;      /* company 2 accent: bronze */
+  --co2-bg:#f5ede1;
+  --co2-line:#e0cfb1;
+
+  --green:#2f6d4f;--greenbg:#e6f0e9;--green-line:#c3ddcd;
+  --amber:#9a6a1f;--amberbg:#f7edd9;--amber-line:#e6d3a3;
+  --red:#a13f38;
+
+  --shadow-sm:0 1px 2px rgba(28,26,21,0.06);
+  --shadow-md:0 2px 10px rgba(28,26,21,0.07), 0 1px 2px rgba(28,26,21,0.05);
+  --radius:10px;
+  --radius-sm:6px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100vh;overflow:hidden;background:var(--bg);color:var(--ink);
+  font:12px/1.4 'Inter',ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+::selection{background:var(--navy);color:#fff}
+
+.app{display:flex;flex-direction:column;height:100vh;padding:10px 14px;gap:8px;
+  background:
+    radial-gradient(1200px 400px at 100% -10%, rgba(28,45,74,0.04), transparent),
+    var(--bg);
+}
+
+/* ---------- Header ---------- */
+.header{display:flex;align-items:center;justify-content:space-between;background:var(--surface);
+  padding:9px 16px;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(155deg,var(--navy),var(--navy-soft));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 3px rgba(28,45,74,0.3)}
+.brand-mark svg{width:16px;height:16px}
+.brand-title{font-family:'Fraunces',serif;font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.brand-subtitle{color:var(--muted);font-size:10px;margin-top:1px;font-weight:500}
+.identity-badge{background:var(--navy-bg);border:1px solid var(--navy-line);color:var(--navy-soft);
+  padding:5px 11px;border-radius:7px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.identity-badge b{color:var(--navy);font-weight:700}
+
+/* ---------- Controls Bar ---------- */
+.controls-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--surface);
+  padding:7px 10px;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.company-selector{display:flex;gap:3px;background:var(--surface-tint);padding:3px;border-radius:8px;border:1px solid var(--line)}
+.co-btn{border:none;background:transparent;color:var(--ink-soft);padding:6px 14px;font-weight:700;font-size:11px;
+  border-radius:6px;transition:all .18s ease;display:flex;align-items:center;gap:6px;letter-spacing:.01em}
+.co-btn .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.35}
+.co-btn.active{background:var(--surface);color:var(--co1);box-shadow:var(--shadow-sm)}
+.co-btn.active .dot{opacity:1}
+.co-btn.active[data-co="Shree Cement"]{color:var(--co2)}
+.co-btn:hover:not(.active){color:var(--ink)}
+
+.view-tabs{display:flex;gap:3px}
+.view-btn{border:1px solid transparent;background:transparent;color:var(--muted);padding:6px 13px;font-weight:600;
+  font-size:10.5px;border-radius:7px;transition:all .15s;letter-spacing:.01em}
+.view-btn:hover:not(.active){background:var(--surface-tint);color:var(--ink-soft)}
+.view-btn.active{background:var(--navy);color:#fff;box-shadow:0 1px 4px rgba(28,45,74,0.25)}
+
+/* ---------- KPI Strip ---------- */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.kpi-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 10px;
+  box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:border-color .15s}
+.kpi-card:hover{border-color:var(--line-strong)}
+.kpi-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2.5px;background:var(--navy);opacity:.65}
+.kpi-label{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;margin:2px 0 1px;white-space:nowrap;
+  color:var(--ink);letter-spacing:-.01em}
+.kpi-sub{font-size:8.5px;color:var(--muted-soft);font-weight:500}
+
+/* ---------- Main Layout ---------- */
+.main-grid{flex:1;min-height:0;display:grid;grid-template-columns:1.25fr 1fr;gap:8px}
+.col{display:flex;flex-direction:column;gap:8px;min-height:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;
+  display:flex;flex-direction:column;min-height:0;box-shadow:var(--shadow-md)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;
+  border-bottom:1px solid var(--line)}
+.panel-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink);
+  display:flex;align-items:center;gap:6px}
+.panel-title::before{content:'';width:3px;height:11px;background:var(--navy);border-radius:2px;opacity:.7}
+.pill{font-size:9px;color:var(--navy-soft);font-weight:600;background:var(--navy-bg);padding:3px 8px;border-radius:20px;
+  border:1px solid var(--navy-line)}
+
+/* ---------- Strategy Pipeline ---------- */
+.strategy-pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;background:var(--surface-sunken);
+  padding:7px;border-radius:var(--radius-sm);border:1px solid var(--line)}
+.pipe-step{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--navy);
+  border-radius:var(--radius-sm);padding:7px 9px;transition:transform .15s;box-shadow:var(--shadow-sm)}
+.pipe-step.green{border-left-color:var(--green)}
+.pipe-step.amber{border-left-color:var(--amber)}
+.pipe-step strong{font-size:10px;display:block;color:var(--ink);font-weight:700}
+.pipe-step span{font-size:8.75px;color:var(--muted);line-height:1.3;display:block;margin-top:2px;font-weight:500}
+
+/* ---------- Chart ---------- */
+.chart-box{flex:1;min-height:0;width:100%;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.chart-legend{display:flex;gap:14px;align-items:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:600;color:var(--ink-soft)}
+.legend-swatch{width:14px;height:2.5px;border-radius:2px}
+
+/* ---------- Findings ---------- */
+.findings-list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;flex:1;min-height:0;padding-right:3px}
+.findings-list::-webkit-scrollbar{width:5px}
+.findings-list::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px}
+.finding-card{background:var(--surface-sunken);border:1px solid var(--line);border-left:3px solid var(--navy);
+  border-radius:var(--radius-sm);padding:7px 10px}
+.finding-card.warn{border-left-color:var(--amber);background:var(--amberbg)}
+.finding-card.good{border-left-color:var(--green);background:var(--greenbg)}
+.finding-card b{font-size:10px;color:var(--ink);display:flex;align-items:center;gap:5px;font-weight:700}
+.finding-card b::before{font-size:9px}
+.finding-card.good b::before{content:'●';color:var(--green)}
+.finding-card.warn b::before{content:'●';color:var(--amber)}
+.finding-card p{font-size:9.25px;color:var(--ink-soft);margin-top:3px;line-height:1.35}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.metric-tile{background:var(--surface-sunken);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:6px 7px;display:flex;flex-direction:column;justify-content:center}
+.metric-tile strong{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink);font-weight:700}
+.metric-tile small{color:var(--muted);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+.diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.diag-card{background:var(--surface-sunken);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 10px}
+.diag-card small{display:block;color:var(--muted);font-size:8.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.diag-card .num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--ink);margin-top:2px}
+.progress-bar{height:4px;background:var(--surface-tint);border-radius:3px;margin-top:6px;overflow:hidden;border:1px solid var(--line)}
+.progress-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--navy-soft),var(--navy));border-radius:3px}
+
+.footer{display:flex;align-items:center;justify-content:space-between;color:var(--muted-soft);font-size:8.5px;
+  padding:1px 6px;font-weight:500}
+.good-text{color:var(--green)}.warn-text{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 20V10M11 20V4M18 20V13" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title" id="companyHeader">UltraTech Cement — Interactive Analysis</div>
+        <div class="brand-subtitle">Ten-Year Strategic &amp; Financial Performance Workspace · FY17–FY26</div>
+      </div>
+    </div>
+    <div class="identity-badge">STUDENT&nbsp;<b>Mohd. Unes Shamsi</b>&nbsp;·&nbsp;ROLL&nbsp;<b>M26E-26</b></div>
+  </header>
+
+  <div class="controls-bar">
+    <div class="company-selector">
+      <button class="co-btn active" data-co="UltraTech"><span class="dot"></span>UltraTech Cement</button>
+      <button class="co-btn" data-co="Shree Cement"><span class="dot"></span>Shree Cement</button>
+    </div>
+    <div class="view-tabs" id="viewTabs">
+      <button class="view-btn active" data-view="overview">Executive Overview</button>
+      <button class="view-btn" data-view="dupont">DuPont Breakdown</button>
+      <button class="view-btn" data-view="wc">Working Capital</button>
+      <button class="view-btn" data-view="forensics">Solvency &amp; Forensics</button>
+    </div>
+  </div>
+
+  <section class="kpi-strip" id="kpiStrip"></section>
+
+  <div class="main-grid">
+    <div class="col">
+      <section class="panel" style="flex:0 0 auto;">
+        <div class="panel-head">
+          <div class="panel-title" id="pipelineTitle">Strategic Capital Deployment Pipeline</div>
+          <span class="pill" id="benchmarkPill">Peer Benchmark Active</span>
+        </div>
+        <div class="strategy-pipeline" id="pipelineContainer"></div>
+      </section>
+
+      <section class="panel" style="flex:1;">
+        <div class="panel-head">
+          <div class="panel-title" id="chartTitle">Ten-Year Trajectory Trend</div>
+          <div class="chart-legend" id="chartLegend"></div>
+        </div>
+        <div class="chart-box"><canvas id="chartCanvas"></canvas></div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel" style="flex:1;">
+        <div class="panel-head">
+          <div class="panel-title">View Insights &amp; Key Findings</div>
+        </div>
+        <div class="findings-list" id="findingsList"></div>
+      </section>
+
+      <section class="panel" style="flex:1;">
+        <div class="panel-head">
+          <div class="panel-title">Diagnostic Metrics &amp; Controls</div>
+        </div>
+        <div class="diag-grid" id="diagGrid"></div>
+        <div class="panel-head" style="margin-top:8px;margin-bottom:6px;">
+          <div class="panel-title" style="font-size:9.5px;">Operational Data Tiles</div>
+        </div>
+        <div class="metrics-grid" id="metricsGrid"></div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>Source: Consolidated Statements FY17–FY26 · Single-Screen Multi-View Architecture</div>
+    <div>MBA Financial Accounting Portfolio · Mohd. Unes Shamsi (M26E-26)</div>
+  </footer>
+</div>
+
+<script>
+const YEARS = ["FY17","FY18","FY19","FY20","FY21","FY22","FY23","FY24","FY25","FY26"];
+
+const DATA = {
+  "UltraTech": {
+    overview: {
+      pipeline: [
+        { title: "Aggressive Capex", sub: "₹16k+ Cr Expansion", type: "amber" },
+        { title: "M&A Integration", sub: "India Cements / Kesoram", type: "blue" },
+        { title: "Capacity Scale", sub: "Ramping to 240+ Million Tonnes Per Annum", type: "blue" },
+        { title: "Resilient Return", sub: "ROE 10.2% Sustained", type: "green" }
+      ],
+      chartLabel: "Revenue & Operating Cash Flow Trend (₹ Cr)",
+      s1: [25365,30978,37379,42125,44725,52599,63240,70908,74500,88511],
+      s2: [4350,5600,6900,8900,12400,9800,9100,11200,10500,16600],
+      s1Name: "Revenue", s2Name: "Operating Cash Flow", unit: "Cr",
+      findings: [
+        { b: "Scale Dominance", p: "Leading Indian cement market with capacity expanding toward 240+ Million Tonnes Per Annum.", t: "good" },
+        { b: "Leveraged Growth", p: "Debt utilized strategically to finance large-scale organic and M&A acquisitions.", t: "warn" }
+      ],
+      kpis: [
+        { l: "Revenue FY26", v: "₹88,511 Cr", s: "Peer: ₹20,943 Cr" },
+        { l: "Operating Cash", v: "₹16,600 Cr", s: "OCF/NI: 2.03x" },
+        { l: "Return on Equity", v: "10.2%", s: "FY17: 11.3%" },
+        { l: "Gross D/E", v: "0.28x", s: "Peer: 0.07x" },
+        { l: "Current Ratio", v: "0.75x", s: "Quick: 0.46x" },
+        { l: "CCC", v: "22.9 Days", s: "Peer: 51.9 Days" }
+      ]
+    },
+    dupont: {
+      pipeline: [
+        { title: "Net Margin", sub: "9.3% Profitability", type: "blue" },
+        { title: "Asset Turnover", sub: "0.62x Utilization", type: "blue" },
+        { title: "Equity Multiplier", sub: "1.76x Financial Leverage", type: "amber" },
+        { title: "DuPont ROE", sub: "10.2% Final Return", type: "green" }
+      ],
+      chartLabel: "DuPont Decomposition: ROE vs Net Margin (%)",
+      s1: [11.3, 8.4, 7.1, 14.8, 12.4, 14.6, 9.4, 11.7, 8.2, 10.2],
+      s2: [9.6, 7.1, 5.9, 13.8, 12.3, 14.2, 8.1, 10.0, 8.1, 9.3],
+      s1Name: "ROE (%)", s2Name: "Net Margin (%)", unit: "%",
+      findings: [
+        { b: "Stable Leverage Efficiency", p: "Equity multiplier of 1.76x efficiently amplifies operating returns.", t: "good" },
+        { b: "Asset Base Expansion", p: "Asset turnover held steady at 0.62x despite 3x total asset growth.", t: "good" }
+      ],
+      kpis: [
+        { l: "ROE (FY26)", v: "10.2%", s: "Peer: 7.5%" },
+        { l: "Net Margin", v: "9.3%", s: "Peer: 8.3%" },
+        { l: "Asset Turnover", v: "0.62x", s: "Peer: 0.67x" },
+        { l: "Equity Multiplier", v: "1.76x", s: "Peer: 1.34x" },
+        { l: "ROA", v: "5.8%", s: "Peer: 5.5%" },
+        { l: "ROIC", v: "9.8%", s: "Peer: 7.2%" }
+      ]
+    },
+    wc: {
+      pipeline: [
+        { title: "DSO Control", sub: "25.2 Days Collection", type: "green" },
+        { title: "Inventory (DIO)", sub: "40.5 Days Holding", type: "blue" },
+        { title: "Payables (DPO)", sub: "42.8 Days Credit", type: "green" },
+        { title: "Net CCC", sub: "22.9 Days Total Cycle", type: "green" }
+      ],
+      chartLabel: "Working Capital Dynamics: CCC vs DSO (Days)",
+      s1: [29.7, 36.0, 33.3, 28.0, 15.6, 19.8, 19.1, 21.6, 29.8, 22.9],
+      s2: [22.6, 25.8, 24.9, 20.8, 21.2, 21.7, 22.6, 22.4, 28.7, 25.2],
+      s1Name: "CCC (Days)", s2Name: "DSO (Days)", unit: "d",
+      findings: [
+        { b: "Lean Working Capital", p: "CCC optimized at 22.9 days; supplier credit (DPO 42.8d) funds inventory.", t: "good" },
+        { b: "Collection Rigor", p: "Receivables collected within 25.2 days despite aggressive market expansion.", t: "good" }
+      ],
+      kpis: [
+        { l: "CCC Cycle", v: "22.9 Days", s: "Optimized" },
+        { l: "DSO", v: "25.2 Days", s: "Peer: 31.8 Days" },
+        { l: "DIO", v: "40.5 Days", s: "Peer: 48.4 Days" },
+        { l: "DPO", v: "42.8 Days", s: "Peer: 28.3 Days" },
+        { l: "Current Ratio", v: "0.75x", s: "Tight Liquidity" },
+        { l: "Quick Ratio", v: "0.46x", s: "Low Cash Buffer" }
+      ]
+    },
+    forensics: {
+      pipeline: [
+        { title: "Altman Z-Score", sub: "1.80 Safe/Grey Zone", type: "amber" },
+        { title: "Beneish M-Score", sub: "-3.23 Clean Accounting", type: "green" },
+        { title: "Accrual Ratio", sub: "-6.0% Cash-Backed", type: "green" },
+        { title: "Audit Opinion", sub: "Unmodified Clean Report", type: "green" }
+      ],
+      chartLabel: "Solvency Profile: Debt/Equity vs Interest Coverage",
+      s1: [0.31, 0.71, 0.72, 0.55, 0.41, 0.20, 0.18, 0.17, 0.31, 0.28],
+      s2: [7.05, 3.67, 2.95, 3.60, 6.29, 9.85, 10.01, 10.73, 5.56, 6.84],
+      s1Name: "Gross D/E (x)", s2Name: "Interest Cover (x)", unit: "x",
+      findings: [
+        { b: "Clean Earnings Integrity", p: "Negative accrual ratio (-6.0%) and high OCF/NI confirm zero profit inflation.", t: "good" },
+        { b: "Controlled Debt Burden", p: "Interest coverage robust at 6.8x, easily supporting 0.28x gross leverage.", t: "good" }
+      ],
+      kpis: [
+        { l: "Altman Z-Score", v: "1.80x", s: "Safe Buffer" },
+        { l: "Beneish M-Score", v: "-3.23", s: "No Manipulation" },
+        { l: "Interest Cover", v: "6.84x", s: "Peer: 11.83x" },
+        { l: "Accrual Ratio", v: "-6.0%", s: "Cash > Profit" },
+        { l: "Gross D/E", v: "0.28x", s: "Moderate Leverage" },
+        { l: "OCF / NI Ratio", v: "2.03x", s: "High Cash Ratio" }
+      ]
+    }
+  },
+  "Shree Cement": {
+    overview: {
+      pipeline: [
+        { title: "Zero Debt Safety", sub: "0.07x Gross Leverage", type: "green" },
+        { title: "High Liquidity", sub: "2.16x Current Ratio", type: "green" },
+        { title: "Internal Accruals", sub: "Modular Capex Plan", type: "blue" },
+        { title: "ROE Compression", sub: "Diluted to 7.5%", type: "amber" }
+      ],
+      chartLabel: "Revenue & Operating Cash Flow Trend (₹ Cr)",
+      s1: [8500,9800,11700,11900,12600,14300,16800,20500,19800,20943],
+      s2: [2200,2100,2400,3200,3400,1800,2800,3100,4200,3800],
+      s1Name: "Revenue", s2Name: "Operating Cash Flow", unit: "Cr",
+      findings: [
+        { b: "Capital Preservation Focus", p: "Ultra-conservative balance sheet with near zero debt (0.07x D/E).", t: "good" },
+        { b: "ROE Dilution Drag", p: "Return on Equity compressed from 21.7% to 7.5% as new capacity ramps slowly.", t: "warn" }
+      ],
+      kpis: [
+        { l: "Revenue FY26", v: "₹20,943 Cr", s: "Peer: ₹88,511 Cr" },
+        { l: "Operating Cash", v: "₹3,800 Cr", s: "OCF/NI: 2.37x" },
+        { l: "Return on Equity", v: "7.5%", s: "FY17: 21.7%" },
+        { l: "Gross D/E", v: "0.07x", s: "Peer: 0.28x" },
+        { l: "Current Ratio", v: "2.16x", s: "Quick: 1.76x" },
+        { l: "CCC", v: "51.9 Days", s: "Peer: 22.9 Days" }
+      ]
+    },
+    dupont: {
+      pipeline: [
+        { title: "Margin Compression", sub: "8.3% Profit Margin", type: "amber" },
+        { title: "Asset Turnover", sub: "0.67x Asset Use", type: "blue" },
+        { title: "Unlevered Structure", sub: "1.34x Multiplier", type: "green" },
+        { title: "Compressed ROE", sub: "7.5% Final Return", type: "amber" }
+      ],
+      chartLabel: "DuPont Decomposition: ROE vs Net Margin (%)",
+      s1: [17.4, 15.6, 10.3, 11.6, 14.8, 13.3, 6.8, 11.5, 5.2, 7.5],
+      s2: [13.9, 13.6, 8.0, 11.9, 13.4, 12.4, 5.7, 9.4, 5.8, 8.3],
+      s1Name: "ROE (%)", s2Name: "Net Margin (%)", unit: "%",
+      findings: [
+        { b: "Unlevered Return Cap", p: "Low financial leverage (1.34x multiplier) restricts ROE expansion.", t: "warn" },
+        { b: "Margin Contraction", p: "Net margin compressed from 13.9% (FY17) to 8.3% due to cost pressures.", t: "warn" }
+      ],
+      kpis: [
+        { l: "ROE (FY26)", v: "7.5%", s: "Peer: 10.2%" },
+        { l: "Net Margin", v: "8.3%", s: "Peer: 9.3%" },
+        { l: "Asset Turnover", v: "0.67x", s: "Peer: 0.62x" },
+        { l: "Equity Multiplier", v: "1.34x", s: "Peer: 1.76x" },
+        { l: "ROA", v: "5.5%", s: "Peer: 5.8%" },
+        { l: "ROIC", v: "7.2%", s: "Peer: 9.8%" }
+      ]
+    },
+    wc: {
+      pipeline: [
+        { title: "DSO Expansion", sub: "31.8 Days Receivables", type: "amber" },
+        { title: "Inventory (DIO)", sub: "48.4 Days Holding", type: "amber" },
+        { title: "Payables (DPO)", sub: "28.3 Days Terms", type: "blue" },
+        { title: "Net CCC", sub: "51.9 Days Total Cycle", type: "amber" }
+      ],
+      chartLabel: "Working Capital Dynamics: CCC vs DSO (Days)",
+      s1: [49.0, 46.7, 68.5, 60.6, 32.4, 46.6, 45.2, 51.9, 47.0, 51.9],
+      s2: [12.7, 16.5, 29.8, 30.6, 14.6, 15.3, 19.7, 18.4, 26.5, 31.8],
+      s1Name: "CCC (Days)", s2Name: "DSO (Days)", unit: "d",
+      findings: [
+        { b: "Working Capital Drag", p: "CCC at 51.9 days is significantly higher than UltraTech (22.9d).", t: "warn" },
+        { b: "DSO Slippage", p: "Receivable days lengthened from 12.7d to 31.8d over the 10-year window.", t: "warn" }
+      ],
+      kpis: [
+        { l: "CCC Cycle", v: "51.9 Days", s: "Lagging Peer" },
+        { l: "DSO", v: "31.8 Days", s: "Peer: 25.2 Days" },
+        { l: "DIO", v: "48.4 Days", s: "Peer: 40.5 Days" },
+        { l: "DPO", v: "28.3 Days", s: "Peer: 42.8 Days" },
+        { l: "Current Ratio", v: "2.16x", s: "High Buffer" },
+        { l: "Quick Ratio", v: "1.76x", s: "Very Liquid" }
+      ]
+    },
+    forensics: {
+      pipeline: [
+        { title: "Altman Z-Score", sub: "3.52 Pristine Solvency", type: "green" },
+        { title: "Beneish M-Score", sub: "-3.83 Zero Inflation", type: "green" },
+        { title: "Accrual Ratio", sub: "-7.6% Conservative", type: "green" },
+        { title: "Audit Opinion", sub: "Unmodified Clean Report", type: "green" }
+      ],
+      chartLabel: "Solvency Profile: Debt/Equity vs Interest Coverage",
+      s1: [0.17, 0.38, 0.29, 0.18, 0.14, 0.12, 0.14, 0.07, 0.04, 0.07],
+      s2: [12.83, 14.51, 5.62, 7.64, 12.95, 14.38, 6.69, 12.45, 7.40, 11.83],
+      s1Name: "Gross D/E (x)", s2Name: "Interest Cover (x)", unit: "x",
+      findings: [
+        { b: "Pristine Solvency", p: "Altman Z-Score of 3.52 places company solidly in the safe zone.", t: "good" },
+        { b: "Fortress Balance Sheet", p: "Interest coverage of 11.8x offers supreme structural downside protection.", t: "good" }
+      ],
+      kpis: [
+        { l: "Altman Z-Score", v: "3.52x", s: "Safe Zone" },
+        { l: "Beneish M-Score", v: "-3.83", s: "No Manipulation" },
+        { l: "Interest Cover", v: "11.83x", s: "Peer: 6.84x" },
+        { l: "Accrual Ratio", v: "-7.6%", s: "High Integrity" },
+        { l: "Gross D/E", v: "0.07x", s: "Near Zero Debt" },
+        { l: "OCF / NI Ratio", v: "2.37x", s: "Conservative Book" }
+      ]
+    }
+  }
+};
+
+let currentCompany = "UltraTech";
+let currentView = "overview";
+
+// accent resolved per current company for chart/legend consistency
+function accent(){ return currentCompany === "UltraTech" ? "#1c2d4a" : "#8a5a2e"; }
+function accent2(){ return "#2f6d4f"; }
+
+function renderDashboard() {
+  const cData = DATA[currentCompany][currentView];
+
+  document.getElementById("companyHeader").textContent = currentCompany + " — Interactive Workspace";
+  document.getElementById("pipelineTitle").textContent = currentCompany + " Dynamic Strategy Pipeline";
+  document.getElementById("benchmarkPill").textContent = "Peer Benchmark: " + (currentCompany === "UltraTech" ? "Shree Cement" : "UltraTech");
+
+  document.getElementById("kpiStrip").innerHTML = cData.kpis.map(k => `
+    <div class="kpi-card">
+      <div class="kpi-label">${k.l}</div>
+      <div class="kpi-value">${k.v}</div>
+      <div class="kpi-sub">${k.s}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("pipelineContainer").innerHTML = cData.pipeline.map(p => `
+    <div class="pipe-step ${p.type}">
+      <strong>${p.title}</strong>
+      <span>${p.sub}</span>
+    </div>
+  `).join("");
+
+  document.getElementById("findingsList").innerHTML = cData.findings.map(f => `
+    <div class="finding-card ${f.t}">
+      <b>${f.b}</b>
+      <p>${f.p}</p>
+    </div>
+  `).join("");
+
+  const diagData = [
+    ["Altman Z-Score", currentCompany === "UltraTech" ? "1.80x" : "3.52x", "Solvency Health", 85],
+    ["Beneish M-Score", currentCompany === "UltraTech" ? "-3.23" : "-3.83", "Accounting Integrity", 95]
+  ];
+  document.getElementById("diagGrid").innerHTML = diagData.map(d => `
+    <div class="diag-card">
+      <small>${d[0]}</small>
+      <div class="num">${d[1]}</div>
+      <small>${d[2]}</small>
+      <div class="progress-bar"><i style="width:${d[3]}%"></i></div>
+    </div>
+  `).join("");
+
+  const opTiles = [
+    ["ROA", currentCompany === "UltraTech" ? "5.8%" : "5.5%"],
+    ["DSO", currentCompany === "UltraTech" ? "25.2d" : "31.8d"],
+    ["OCF/NI", currentCompany === "UltraTech" ? "2.03x" : "2.37x"],
+    ["FCF FY26", currentCompany === "UltraTech" ? "₹6,938 Cr" : "₹2,274 Cr"]
+  ];
+  document.getElementById("metricsGrid").innerHTML = opTiles.map(m => `
+    <div class="metric-tile">
+      <strong>${m[1]}</strong>
+      <small>${m[0]}</small>
+    </div>
+  `).join("");
+
+  document.getElementById("chartLegend").innerHTML = `
+    <div class="legend-item"><span class="legend-swatch" style="background:${accent()}"></span>${cData.s1Name}</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:${accent2()};background-image:repeating-linear-gradient(90deg,${accent2()} 0 4px,transparent 4px 7px)"></span>${cData.s2Name}</div>
+  `;
+
+  renderChart();
+}
+
+function renderChart() {
+  const cData = DATA[currentCompany][currentView];
+  const canvas = document.getElementById("chartCanvas");
+  const ctx = canvas.getContext("2d");
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = Math.max(10, rect.width * dpr);
+  canvas.height = Math.max(10, rect.height * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const W = rect.width, H = rect.height;
+  const pad = { left: 34, right: 15, top: 14, bottom: 22 };
+  const x0 = pad.left, x1 = W - pad.right, y0 = H - pad.bottom, y1 = pad.top;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const s1 = cData.s1, s2 = cData.s2;
+  const allVals = [...s1, ...s2];
+  let maxVal = Math.max(...allVals) * 1.15;
+  let minVal = Math.min(0, Math.min(...allVals));
+
+  const px = i => x0 + (x1 - x0) * i / (YEARS.length - 1);
+  const py = v => y0 - (y0 - y1) * (v - minVal) / (maxVal - minVal);
+
+  // Grid
+  ctx.strokeStyle = "#e3ded3"; ctx.lineWidth = 1;
+  for (let g = 0; g <= 3; g++) {
+    let y = y1 + (y0 - y1) * g / 3;
+    ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+  }
+
+  // Y-axis value labels
+  ctx.fillStyle = "#8a8271"; ctx.font = "600 8px 'JetBrains Mono', monospace"; ctx.textAlign = "right";
+  for (let g = 0; g <= 3; g++) {
+    let y = y1 + (y0 - y1) * g / 3;
+    let val = maxVal - (maxVal - minVal) * g / 3;
+    let label = Math.abs(val) >= 1000 ? (val/1000).toFixed(1) + "k" : val.toFixed(val % 1 === 0 ? 0 : 1);
+    ctx.fillText(label, x0 - 6, y + 3);
+  }
+  ctx.textAlign = "left";
+
+  // X-Labels
+  YEARS.forEach((yr, i) => {
+    ctx.fillStyle = "#8a8271"; ctx.font = "600 8.5px 'Inter', system-ui";
+    ctx.textAlign = "center";
+    ctx.fillText(yr, px(i), y0 + 15);
+  });
+  ctx.textAlign = "left";
+
+  const c1 = accent(), c2 = accent2();
+
+  // Plot Lines
+  function drawLine(arr, color, isDashed=false) {
+    ctx.beginPath();
+    arr.forEach((v, i) => i ? ctx.lineTo(px(i), py(v)) : ctx.moveTo(px(i), py(v)));
+    ctx.strokeStyle = color; ctx.lineWidth = 2.25;
+    ctx.lineJoin = "round"; ctx.lineCap = "round";
+    if (isDashed) ctx.setLineDash([4, 3]); else ctx.setLineDash([]);
+    ctx.stroke(); ctx.setLineDash([]);
+    arr.forEach((v, i) => {
+      ctx.beginPath(); ctx.arc(px(i), py(v), 2.75, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff"; ctx.fill();
+      ctx.lineWidth = 1.75; ctx.strokeStyle = color; ctx.stroke();
+    });
+  }
+
+  drawLine(s1, c1, false);
+  drawLine(s2, c2, true);
+
+  document.getElementById("chartTitle").textContent = cData.chartLabel;
+}
+
+document.querySelectorAll(".co-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const b = e.currentTarget;
+    document.querySelectorAll(".co-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    currentCompany = b.dataset.co;
+    renderDashboard();
+  });
+});
+
+document.querySelectorAll(".view-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const b = e.currentTarget;
+    document.querySelectorAll(".view-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    currentView = b.dataset.view;
+    renderDashboard();
+  });
+});
+
+window.addEventListener("resize", renderChart);
+
+renderDashboard();
+</script>
+</body>
+</html>
