@@ -186,6 +186,7 @@ button{font:inherit;cursor:pointer}
       <button class="view-btn" data-view="dupont">DuPont Breakdown</button>
       <button class="view-btn" data-view="wc">Working Capital</button>
       <button class="view-btn" data-view="forensics">Solvency &amp; Forensics</button>
+      <button class="view-btn" data-view="industry">Industry Comparison</button>
     </div>
   </div>
 
@@ -337,6 +338,30 @@ const DATA = {
         { l: "Gross D/E", v: "0.28x", s: "Moderate Leverage" },
         { l: "OCF / NI Ratio", v: "2.03x", s: "High Cash Ratio" }
       ]
+    },
+    industry: {
+      pipeline: [
+        { title: "Sector Growth Outlook", sub: "7–9% Demand CAGR to 2030 (McKinsey)", type: "blue" },
+        { title: "Capex Ahead of Cycle", sub: "9.8%–12.9% of Revenue Since FY22", type: "amber" },
+        { title: "New Diversification", sub: "Wires & Cables Entry, Targeted Q3 FY27", type: "blue" },
+        { title: "Capacity Scale-Up", sub: "Expanding Toward 240+ MTPA", type: "green" }
+      ],
+      chartLabel: "Capex Intensity vs Industry Growth Benchmark (%)",
+      s1: [4.0, 4.6, 5.3, 6.0, 6.7, 9.8, 10.6, 11.4, 12.1, 12.9],
+      s2: [7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5],
+      s1Name: "Capex Intensity (%)", s2Name: "Industry Growth Est. (BCG ~7.5%)", unit: "%",
+      findings: [
+        { b: "Structurally Attractive Sector", p: "McKinsey projects 7–9% annual Indian cement demand growth to 2030; BCG estimates 6.5–7.5% growth through FY2029–30, both citing urbanisation and infrastructure demand.", t: "good" },
+        { b: "Capex Judged Against the Cycle", p: "Elevated capex intensity (9.8%–12.9% of revenue since FY22) should be read against sector-wide expansion, not as an isolated weakness — though utilisation and cash returns remain the key execution test.", t: "warn" }
+      ],
+      kpis: [
+        { l: "Industry Growth (McKinsey)", v: "7–9%", s: "CAGR to 2030" },
+        { l: "Industry Growth (BCG)", v: "6.5–7.5%", s: "CAGR to FY2029–30" },
+        { l: "Revenue Scale Gap", v: "≈4x", s: "UltraTech vs Shree" },
+        { l: "PBIDT Margin", v: "~19%", s: "Shree Op. Margin: ~21.7%" },
+        { l: "Capex / Revenue", v: "9.8%–12.9%", s: "FY22–FY26" },
+        { l: "Capacity Target", v: "240+ MTPA", s: "From ~200 MTPA" }
+      ]
     }
   },
   "Shree Cement": {
@@ -434,6 +459,30 @@ const DATA = {
         { l: "Accrual Ratio", v: "-7.6%", s: "High Integrity" },
         { l: "Gross D/E", v: "0.07x", s: "Near Zero Debt" },
         { l: "OCF / NI Ratio", v: "2.37x", s: "Conservative Book" }
+      ]
+    },
+    industry: {
+      pipeline: [
+        { title: "Sector Growth Outlook", sub: "6.5–7.5% CAGR Through FY2029–30 (BCG)", type: "blue" },
+        { title: "Zero-Debt Positioning", sub: "0.07x Gross Leverage Preserved", type: "green" },
+        { title: "Cost-Efficiency Edge", sub: "~21.7% Operating Margin", type: "green" },
+        { title: "Slower Capacity Build", sub: "Modular, Internally-Funded Capex", type: "amber" }
+      ],
+      chartLabel: "Net Margin Trend vs Industry Growth Benchmark (%)",
+      s1: [13.9, 13.6, 8.0, 11.9, 13.4, 12.4, 5.7, 9.4, 5.8, 8.3],
+      s2: [7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5],
+      s1Name: "Net Margin (%)", s2Name: "Industry Growth Est. (BCG ~7.5%)", unit: "%",
+      findings: [
+        { b: "Structurally Attractive Sector", p: "McKinsey projects 7–9% annual Indian cement demand growth to 2030; BCG estimates 6.5–7.5% growth through FY2029–30, both citing urbanisation and infrastructure demand.", t: "good" },
+        { b: "Conservative Positioning in a Growth Market", p: "Near-zero leverage preserves flexibility to participate in industry growth without balance-sheet risk, though a slower, internally-funded capacity build may mean capturing a smaller share of the upside.", t: "good" }
+      ],
+      kpis: [
+        { l: "Industry Growth (McKinsey)", v: "7–9%", s: "CAGR to 2030" },
+        { l: "Industry Growth (BCG)", v: "6.5–7.5%", s: "CAGR to FY2029–30" },
+        { l: "Revenue Scale Gap", v: "≈0.25x", s: "Shree vs UltraTech" },
+        { l: "Operating Margin", v: "~21.7%", s: "UltraTech PBIDT: ~19%" },
+        { l: "Gross D/E", v: "0.07x", s: "Peer: 0.28x" },
+        { l: "Capacity Approach", v: "Modular", s: "Internal Accruals" }
       ]
     }
   }
